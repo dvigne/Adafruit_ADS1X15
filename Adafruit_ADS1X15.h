@@ -10,15 +10,16 @@
 
     Written by Kevin "KTOWN" Townsend for Adafruit Industries.
 
+    Adapted for Linux I2C Communication by Derick Vigne
+
     BSD license, all text here must be included in any redistribution
 */
 /**************************************************************************/
 #ifndef __ADS1X15_H__
 #define __ADS1X15_H__
 
-#include <Adafruit_I2CDevice.h>
-#include <Arduino.h>
-#include <Wire.h>
+#include <i2c/i2c.h>
+#include <cstdint>
 
 /*=========================================================================
     I2C ADDRESS/BITS
@@ -141,13 +142,14 @@ typedef enum {
 class Adafruit_ADS1X15 {
 protected:
   // Instance-specific properties
-  Adafruit_I2CDevice *m_i2c_dev; ///< I2C bus device
+  int bus; ///< I2C bus file descriptor
+  I2CDevice m_i2c_dev; ///< I2C bus device
   uint8_t m_bitShift;            ///< bit shift amount
   adsGain_t m_gain;              ///< ADC gain
   uint16_t m_dataRate;           ///< Data rate
 
 public:
-  void begin(uint8_t i2c_addr = ADS1X15_ADDRESS, TwoWire *wire = &Wire);
+  void begin(const char * dev, uint8_t i2c_addr = ADS1X15_ADDRESS);
   int16_t readADC_SingleEnded(uint8_t channel);
   int16_t readADC_Differential_0_1();
   int16_t readADC_Differential_2_3();

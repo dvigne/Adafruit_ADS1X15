@@ -17,6 +17,8 @@
 
     Written by Kevin "KTOWN" Townsend for Adafruit Industries.
 
+    Adapted for Linux I2C communication by Derick Vigne
+
     @section  HISTORY
 
     v1.0  - First release
@@ -29,6 +31,9 @@
 */
 /**************************************************************************/
 #include "Adafruit_ADS1X15.h"
+#include <cstdio>
+#include <string.h>
+#include <stdlib.h>
 
 /**************************************************************************/
 /*!
@@ -60,9 +65,18 @@ Adafruit_ADS1115::Adafruit_ADS1115() {
     @param wire I2C bus
 */
 /**************************************************************************/
-void Adafruit_ADS1X15::begin(uint8_t i2c_addr, TwoWire *wire) {
-  m_i2c_dev = new Adafruit_I2CDevice(i2c_addr, wire);
-  m_i2c_dev->begin();
+void Adafruit_ADS1X15::begin(const char * dev, uint8_t i2c_addr) {
+  if((bus = i2c_open(dev)) == -1) {
+    perror("Error opening I2C Device");
+    exit(1);
+  }
+
+  memset(&m_i2c_dev,  0, sizeof(m_i2c_dev));
+
+  m_i2c_dev.bus = bus;
+  m_i2c_dev.addr = i2c_addr;
+  m_i2c_dev.iaddr_bytes = 1;
+  m_i2c_dev.page_bytes = 16;
 }
 
 /**************************************************************************/
@@ -377,10 +391,9 @@ bool Adafruit_ADS1X15::conversionComplete() {
 */
 /**************************************************************************/
 void Adafruit_ADS1X15::writeRegister(uint8_t reg, uint16_t value) {
-  buffer[0] = reg;
-  buffer[1] = value >> 8;
-  buffer[2] = value & 0xFF;
-  m_i2c_dev->write(buffer, 3);
+  buffer[0] = value >> 8;
+  buffer[1] = value & 0xFF;
+  i2c_write(&m_i2c_dev, reg, buffer, 2);
 }
 
 /**************************************************************************/
@@ -393,8 +406,7 @@ void Adafruit_ADS1X15::writeRegister(uint8_t reg, uint16_t value) {
 */
 /**************************************************************************/
 uint16_t Adafruit_ADS1X15::readRegister(uint8_t reg) {
-  buffer[0] = reg;
-  m_i2c_dev->write(buffer, 1);
-  m_i2c_dev->read(buffer, 2);
+  i2c_write(&m_i2c_dev, reg, buffer, 1);
+  i2c_read(&m_i2c_dev, reg, buffer, 2);
   return ((buffer[0] << 8) | buffer[1]);
 }
