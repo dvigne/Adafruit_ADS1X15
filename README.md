@@ -1,9 +1,10 @@
-# Adafruit_ADS1015 ![Build Status](https://github.com/adafruit/Adafruit_ADS1X15/workflows/Arduino%20Library%20CI/badge.svg)[![Documentation](https://github.com/adafruit/ci-arduino/blob/master/assets/doxygen_badge.svg)](http://adafruit.github.io/Adafruit_ADS1X15/html/index.html)
-
+# Adafruit_ADS1015
 
 Driver for TI's ADS1X15: 12 and 16-bit Differential or Single-Ended ADC with PGA and Comparator
 
 ## Info
+
+This fork of the Adafruit ADS1X15 removed the dependency on the Arduino and Wire library and replaces it with a generic I2C library for communication over Linux based systems and GPIO pins like the Raspberry Pi.
 
 This family of ADCs provide 4 single-ended or 2 differential channels.
 Each has a programmable gain amplifier from 2/3 up to 16x. Available
@@ -17,6 +18,14 @@ The chip's fairly small so it comes on a breakout board with ferrites to keep th
 Adafruit invests time and resources providing this open source code, please
 support Adafruit and open-source hardware by purchasing products from
 [Adafruit](https://www.adafruit.com)!
+
+## Requirements
+
+* https://github.com/amaork/libi2c
+
+## Credits
+
+Thanks to @amaork for creating libi2c
 
 ## License
 
